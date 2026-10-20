@@ -19,7 +19,9 @@ import java.util.List;
  */
 public class Punteggio {
 
-    // scrivete qui i campi che vi servono
+    private int puntiPerVincere;
+    private int scartoMinimo;
+    private List<Lato> storia;
 
     /**
      * Una partita nuova, 0 a 0, con la sua regola per vincere.
@@ -27,7 +29,9 @@ public class Punteggio {
      * Promette: una partita 0 a 0, non finita, senza vincitore e con la storia vuota.
      */
     public Punteggio(int puntiPerVincere, int scartoMinimo) {
-        // scrivete qui
+        this.puntiPerVincere = puntiPerVincere;
+        this.scartoMinimo = scartoMinimo;
+        this.storia = new ArrayList<>();
     }
 
     /**
@@ -39,7 +43,9 @@ public class Punteggio {
      *           Se la partita era già finita, non cambia niente.
      */
     public void segnaPunto(Lato chi) {
-        // scrivete qui
+        if (!isFinita()) {
+            storia.add(chi);
+        }
     }
 
     /**
@@ -47,21 +53,58 @@ public class Punteggio {
      * Promette: i punti del lato chi. Non cambia niente.
      */
     public int getPunti(Lato chi) {
-        return 0; // scrivete qui
+        int contatore = 0;
+        for (Lato l : storia) {    // per ogni Lato l in storia
+            if (l == chi) {
+                contatore ++;
+            }
+        }
+        return contatore;
+    }
+
+    /**
+     * Aggiungo un metodo ausiliario per scrivere meno volte le condizioni di vittoria
+     * nei due metodi successivi così se volessi cambiarle sono più precisa e veloce. 
+     * Pretende: chi non è null.
+     * Promette: vero se ha vinto Lato chi, falso altrimenti.
+     */
+    private boolean haVinto(Lato chi) {
+        Lato altro;
+        if (chi == Lato.DESTRA) {
+            altro = Lato.SINISTRA;
+        } else {
+            altro = Lato.DESTRA;
+        }
+        if (getPunti(chi) >= puntiPerVincere && getPunti(chi) - getPunti(altro) >= scartoMinimo){
+            return true;
+        } else {
+            return false;
+        }
+
     }
 
     /**
      * Promette: vero se la partita è finita, cioè se un lato ha vinto. Non cambia niente.
      */
     public boolean isFinita() {
-        return false; // scrivete qui
+        if (haVinto(Lato.DESTRA) || haVinto(Lato.SINISTRA)) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**
      * Promette: il lato che ha vinto; null se la partita non è finita. Non cambia niente.
      */
     public Lato getVincitore() {
-        return null; // scrivete qui
+        if (haVinto(Lato.DESTRA)) {
+            return Lato.DESTRA;
+        } else if (haVinto(Lato.SINISTRA)) {
+            return Lato.SINISTRA;
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -73,7 +116,9 @@ public class Punteggio {
      *           niente.
      */
     public void annullaUltimoPunto() {
-        // scrivete qui
+        if (storia.size() > 0) {
+            storia.remove(storia.size() - 1);
+        }
     }
 
     /**
@@ -87,7 +132,7 @@ public class Punteggio {
      *           segnati dopo; chi la usa non deve contare né sull'una né sull'altra cosa.
      */
     public List<Lato> getStoria() {
-        return new ArrayList<>(); // scrivete qui
+        return List.copyOf(storia);
     }
 
     /**
@@ -96,6 +141,6 @@ public class Punteggio {
      * Promette: 0 a 0, non finita, senza vincitore, storia vuota; la regola per vincere non cambia.
      */
     public void azzera() {
-        // scrivete qui
+        storia.clear();
     }
 }
